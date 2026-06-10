@@ -1,0 +1,12 @@
+{
+  "incident": "Prompt-injection and LLM anti-analysis intake guard",
+  "lastUpdated": "2026-06-10",
+  "scope": {
+    "scannerPackageSet": "Text-like file scanner for prompt-injection, tool-abuse, secret-exfiltration, and LLM anti-analysis language before agent review.",
+    "notInScope": "No malware execution, raw prompt-injection storage, automatic cleanup, token handling, OCR, or claims that content is safe."
+  },
+  "sources": [
+    "https://socket.dev/blog/mini-shai-hulud-miasma-and-hades-worms-target-bioinformatics-and-mcp-developers-via-malicious",
+    "~/dragoneye/james-io/TEAM_BRIEFING_PROMPTWARE_SAMPLE_HANDLING_2026-06-10.md"
+  ]
+}
