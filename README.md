@@ -10,18 +10,35 @@ at overriding an AI assistant or suppressing analysis.
 It does not remove files, modify content, execute code, contact registries, or
 prove that content is safe.
 
+## Install
+
+```sh
+pipx install prompt-injection-blocker
+# or
+pip install prompt-injection-blocker
+```
+
+Python 3.9+. No runtime dependencies.
+
 ## Usage
 
 ```sh
-npm test
-node bin/prompt-injection-blocker.js /path/to/project
-node bin/prompt-injection-blocker.js /path/to/project --json
-node bin/prompt-injection-blocker.js /path/to/project --report report.json
+prompt-injection-blocker /path/to/project
+prompt-injection-blocker /path/to/project --json
+prompt-injection-blocker /path/to/project --report report.json
+```
+
+From a source checkout:
+
+```sh
+python -m prompt_injection_blocker /path/to/project
+pip install -e ".[dev]" && pytest
 ```
 
 Exit codes:
 
 - `0`: no blocking promptware patterns found
+- `1`: usage or runtime error
 - `2`: blocking promptware patterns found
 
 ## What It Flags
@@ -46,7 +63,9 @@ text into an agent," not "this file is malware."
 - If this appears in a third-party repository, do not open the repo in agents or
   editors until reviewed.
 - If a test needs one of these markers, split or encode it so the test remains
-  meaningful without carrying live promptware.
+  meaningful without carrying live promptware. This codebase stores all of its
+  own detection markers split and joins them at runtime; keep that discipline
+  when adding rules.
 
 ## Scope Limits
 
