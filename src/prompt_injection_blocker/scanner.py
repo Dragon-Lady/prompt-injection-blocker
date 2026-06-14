@@ -121,6 +121,31 @@ RULES = [
         ],
     },
     {
+        "id": "agentjacking-sentry-resolution",
+        "severity": "high",
+        "type": "prompt-injection-agentjacking",
+        "description": (
+            "Observability/error text appears to contain agent-facing remediation "
+            "instructions that execute npm tooling."
+        ),
+        "allGroups": [
+            [
+                "sentry",
+                _phrase("error ", "event"),
+                _phrase("unresolved ", "issue"),
+            ],
+            [
+                _phrase("## ", "Resolution"),
+                "resolution:",
+            ],
+            [
+                _phrase("run ", "npx"),
+                _phrase("execute ", "npx"),
+                _phrase("npx ", "@"),
+            ],
+        ],
+    },
+    {
         "id": "llm-anti-analysis",
         "severity": "high",
         "type": "llm-anti-analysis",

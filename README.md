@@ -48,6 +48,8 @@ Exit codes:
 - text asking an agent to reveal secrets, hidden instructions, environment
   variables, or tokens
 - text trying to make an agent run commands or fetch external content
+- observability/tool-output text, such as fake Sentry resolutions, that tries
+  to make an agent run package-manager diagnostics
 - LLM-targeted anti-analysis language that tells scanners not to report
   suspicious content
 - broad repo-local agent instruction language that deserves review before
