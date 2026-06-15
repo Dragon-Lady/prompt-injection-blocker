@@ -2,11 +2,13 @@
   "incident": "Prompt-injection and LLM anti-analysis intake guard",
   "lastUpdated": "2026-06-15",
   "scope": {
-    "scannerPackageSet": "Text-like file scanner for prompt-injection, tool-abuse, secret-exfiltration, LLM anti-analysis language, and refusal/null-result bait before agent review.",
+    "scannerPackageSet": "Text-like file scanner for prompt-injection, tool-abuse, secret-exfiltration, LLM anti-analysis language, refusal/null-result bait, and Copilot q-parameter exfiltration links before agent review.",
     "notInScope": "No malware execution, raw prompt-injection storage, automatic cleanup, token handling, OCR, or claims that content is safe."
   },
   "sources": [
     "https://socket.dev/blog/mini-shai-hulud-miasma-and-hades-worms-target-bioinformatics-and-mcp-developers-via-malicious",
-    "https://research.jfrog.com/post/prompt-injection-vs-scanners/"
+    "https://research.jfrog.com/post/prompt-injection-vs-scanners/",
+    "https://www.bleepingcomputer.com/news/security/new-attack-turned-microsoft-365-copilot-into-1-click-data-theft-tool/",
+    "https://www.windowscentral.com/artificial-intelligence/microsoft-copilot/copilot-ai-reprompt-exploit-detailed-2026"
   ]
 }

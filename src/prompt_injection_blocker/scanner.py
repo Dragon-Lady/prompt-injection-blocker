@@ -202,6 +202,43 @@ RULES = [
         ],
     },
     {
+        "id": "copilot-qparam-exfiltration",
+        "severity": "high",
+        "type": "copilot-qparam-exfiltration",
+        "description": (
+            "Microsoft Copilot or AI-assistant URL appears to carry a prompt "
+            "in a query parameter that asks for private context and external exfiltration."
+        ),
+        "allGroups": [
+            [
+                _phrase("copilot.microsoft", ".com"),
+                _phrase("m365.cloud.microsoft", "/chat"),
+                _phrase("microsoft365", ".com/chat"),
+            ],
+            [
+                "?q=",
+                "&q=",
+                "%3fq%3d",
+                "%26q%3d",
+            ],
+            [
+                _phrase("send ", "to http"),
+                _phrase("fetch ", "http"),
+                _phrase("post ", "to http"),
+                _phrase("exfiltrate"),
+                _phrase("attacker ", "server"),
+            ],
+            [
+                _phrase("recent ", "files"),
+                _phrase("looked ", "at today"),
+                _phrase("where ", "is the user"),
+                _phrase("user ", "location"),
+                "sharepoint",
+                "onedrive",
+            ],
+        ],
+    },
+    {
         "id": "repo-local-agent-instruction",
         "severity": "medium",
         "type": "repo-local-agent-instruction",

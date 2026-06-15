@@ -54,6 +54,8 @@ Exit codes:
   suspicious content
 - model-scanner refusal/null-result bait that tries to make an analysis
   pipeline stop before reaching suspicious payload code
+- Microsoft Copilot / AI-assistant links where a `q=` query parameter appears
+  to carry private-context requests plus external exfiltration instructions
 - broad repo-local agent instruction language that deserves review before
   opening a path in automated agents
 

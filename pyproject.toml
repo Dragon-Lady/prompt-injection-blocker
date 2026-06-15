@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prompt-injection-blocker"
-version = "0.1.2"
+version = "0.1.3"
 description = "Read-only scanner for prompt-injection and LLM anti-analysis text in files before agent review"
 readme = "README.md"
 license = { file = "LICENSE" }
