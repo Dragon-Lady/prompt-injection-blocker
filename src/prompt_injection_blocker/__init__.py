@@ -1,6 +1,6 @@
 """Read-only scanner for prompt-injection and LLM anti-analysis text."""
 
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 
 from .scanner import RULES, scan_target, scan_text
 

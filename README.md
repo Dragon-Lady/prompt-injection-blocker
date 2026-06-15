@@ -52,6 +52,8 @@ Exit codes:
   to make an agent run package-manager diagnostics
 - LLM-targeted anti-analysis language that tells scanners not to report
   suspicious content
+- model-scanner refusal/null-result bait that tries to make an analysis
+  pipeline stop before reaching suspicious payload code
 - broad repo-local agent instruction language that deserves review before
   opening a path in automated agents
 
@@ -68,6 +70,9 @@ text into an agent," not "this file is malware."
   meaningful without carrying live promptware. This codebase stores all of its
   own detection markers split and joins them at runtime; keep that discipline
   when adding rules.
+- Treat model refusal as a failed analysis, not a clean result. Send the file
+  through static checks, sandboxing, or human review instead of allowing a
+  null response to pass.
 
 ## Scope Limits
 

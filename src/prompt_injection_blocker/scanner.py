@@ -170,6 +170,38 @@ RULES = [
         ],
     },
     {
+        "id": "llm-refusal-evasion",
+        "severity": "high",
+        "type": "llm-refusal-evasion",
+        "description": (
+            "Text appears engineered to make model-based scanners refuse or "
+            "return no verdict before analyzing suspicious content."
+        ),
+        "allGroups": [
+            [
+                _phrase("ai ", "scanner"),
+                _phrase("ai security ", "scanner"),
+                _phrase("language ", "model"),
+                _phrase("automated ", "scanner"),
+                _phrase("malware ", "scanner"),
+            ],
+            [
+                _phrase("must ", "refuse"),
+                _phrase("safety ", "guardrail"),
+                _phrase("safety ", "policy"),
+                _phrase("classified ", "documents"),
+                _phrase("weapon ", "systems"),
+            ],
+            [
+                _phrase("stop ", "reading"),
+                _phrase("do not ", "analyze"),
+                _phrase("no ", "verdict"),
+                _phrase("cannot ", "analyze this file"),
+                _phrase("refuse ", "to continue"),
+            ],
+        ],
+    },
+    {
         "id": "repo-local-agent-instruction",
         "severity": "medium",
         "type": "repo-local-agent-instruction",
