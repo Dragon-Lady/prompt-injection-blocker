@@ -58,6 +58,10 @@ Exit codes:
   to carry private-context requests plus external exfiltration instructions
 - broad repo-local agent instruction language that deserves review before
   opening a path in automated agents
+- recognized agent instruction, skill, and MCP configuration paths, even when
+  their contents look benign, so provenance and scope receive human review
+- known phrase families after Unicode compatibility normalization, removal of
+  invisible format characters, and defanging of simple HTML separators
 
 The rules are intentionally conservative. A finding means "do not feed this raw
 text into an agent," not "this file is malware."
@@ -75,9 +79,15 @@ text into an agent," not "this file is malware."
 - Treat model refusal as a failed analysis, not a clean result. Send the file
   through static checks, sandboxing, or human review instead of allowing a
   null response to pass.
+- Treat unfamiliar setup commands and anything they fetch at runtime as
+  untrusted code. A clean text scan cannot establish what a later network
+  response or package installation will execute.
 
 ## Scope Limits
 
 This scanner only checks text-like files and known phrase families. It will not
 detect every possible prompt-injection attempt, encoded payload, image-only
-instruction, or model-specific attack.
+instruction, runtime-fetched instruction, behavioral setup chain, or
+model-specific attack. Use it as one deterministic intake layer alongside
+provenance review, sandboxing, least-privilege tools, network controls, and
+human approval for consequential actions.

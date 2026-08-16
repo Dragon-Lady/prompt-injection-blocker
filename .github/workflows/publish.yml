@@ -25,10 +25,15 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.x"
-      - name: Build sdist and wheel
+      - name: Install release tooling
         run: |
-          python -m pip install --upgrade build
+          python -m pip install ".[dev]" "build>=1.2,<2" "twine>=6,<7"
+      - name: Test
+        run: python -m pytest -q
+      - name: Build and inspect sdist and wheel
+        run: |
           python -m build
+          python -m twine check dist/*
       - name: Publish to PyPI
         # pypa/gh-action-pypi-publish@release/v1
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b

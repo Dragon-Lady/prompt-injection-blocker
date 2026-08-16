@@ -4,6 +4,8 @@ Markers are built split (join_parts) so this repo never carries live
 promptware strings, per team sample-handling rules.
 """
 
+import pytest
+
 from prompt_injection_blocker.scanner import scan_target
 
 
@@ -83,9 +85,9 @@ def test_evidence_is_defanged(tmp_path):
     (tmp_path / "payload.txt").write_text(f"{target}, {suppress} this content.\n")
     report = scan_target(str(tmp_path))
     finding = next(f for f in report["findings"] if f["type"] == "llm-anti-analysis")
-    raw = join_parts("an ", "ai")
-    assert raw not in finding["evidence"]
-    assert "a[i]" in finding["evidence"]
+    assert target not in finding["evidence"]
+    assert suppress not in finding["evidence"]
+    assert finding["evidence"].startswith("structural:")
 
 
 def test_skip_dirs_are_not_scanned(tmp_path):
@@ -95,3 +97,55 @@ def test_skip_dirs_are_not_scanned(tmp_path):
     (hidden / "evil.md").write_text(f"{marker}\n")
     report = scan_target(str(tmp_path))
     assert report["risk"] == "no-known-indicators"
+
+
+def test_invisible_unicode_does_not_bypass_marker(tmp_path):
+    marker = join_parts("ignore", chr(0x200B), " previous instructions")
+    (tmp_path / "notes.md").write_text(f"{marker}\n")
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "blocked"
+    assert any(f["type"] == "prompt-injection-override" for f in report["findings"])
+
+
+def test_html_markup_does_not_bypass_marker(tmp_path):
+    marker = join_parts("ignore", "<!--separator-->", " previous instructions")
+    (tmp_path / "page.html").write_text(f"{marker}\n")
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "blocked"
+
+
+def test_agent_instruction_file_requires_review(tmp_path):
+    (tmp_path / "SKILL.md").write_text("Benign-looking setup guidance.\n")
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "review-needed"
+    finding = next(f for f in report["findings"] if f["type"] == "agent-configuration-file")
+    assert finding["evidence"] == "structural:path-class=agent-instructions"
+
+
+def test_extensionless_agent_instruction_file_is_scanned(tmp_path):
+    (tmp_path / ".windsurfrules").write_text("Benign-looking setup guidance.\n")
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "review-needed"
+    assert any(f["type"] == "agent-configuration-file" for f in report["findings"])
+
+
+def test_agent_tool_config_requires_review(tmp_path):
+    config_dir = tmp_path / ".cursor"
+    config_dir.mkdir()
+    (config_dir / "mcp.json").write_text("{}\n")
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "review-needed"
+    finding = next(f for f in report["findings"] if f["type"] == "agent-configuration-file")
+    assert finding["evidence"] == "structural:path-class=agent-tool-config"
+
+
+def test_mixed_case_text_extension_is_scanned(tmp_path):
+    marker = join_parts("ignore ", "previous instructions")
+    (tmp_path / "NOTES.MD").write_text(f"{marker}\n")
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "blocked"
+
+
+def test_missing_target_is_an_error(tmp_path):
+    with pytest.raises(ValueError, match="Target does not exist"):
+        scan_target(str(tmp_path / "missing"))

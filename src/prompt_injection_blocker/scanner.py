@@ -7,6 +7,7 @@ see README "Safe Handling".
 
 import os
 import re
+import unicodedata
 from datetime import datetime, timezone
 
 DEFAULT_MAX_FILE_BYTES = 2 * 1024 * 1024
@@ -28,6 +29,7 @@ SKIP_DIRS = {
 }
 
 TEXT_FILE_NAMES = {
+    ".windsurfrules",
     "AGENTS.md",
     "CLAUDE.md",
     "README.md",
@@ -71,7 +73,31 @@ TEXT_EXTENSIONS = {
     ".cmd",
     ".xml",
     ".csv",
+    ".mdc",
 }
+
+TEXT_FILE_NAMES_CASEFOLDED = {name.casefold() for name in TEXT_FILE_NAMES}
+
+AGENT_INSTRUCTION_FILE_NAMES = {
+    "agents.md",
+    "claude.md",
+    "gemini.md",
+    "skill.md",
+    ".windsurfrules",
+}
+
+AGENT_TOOL_CONFIG_PATH_SUFFIXES = {
+    "/.mcp.json",
+    "/mcp.json",
+    "/.cursor/mcp.json",
+    "/.vscode/mcp.json",
+    "/.claude/settings.json",
+    "/.claude/settings.local.json",
+}
+
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", flags=re.DOTALL)
+_HTML_TAG_RE = re.compile(r"<[^>\n]{1,256}>")
+_WHITESPACE_RE = re.compile(r"\s+")
 
 
 def _phrase(*parts):
@@ -260,6 +286,11 @@ def scan_target(target_path=".", max_file_bytes=DEFAULT_MAX_FILE_BYTES):
     from . import __version__
 
     root = os.path.abspath(target_path or ".")
+    if not os.path.exists(root):
+        raise ValueError(f"Target does not exist: {root}")
+    if not (os.path.isfile(root) or os.path.isdir(root)):
+        raise ValueError(f"Target is not a regular file or directory: {root}")
+
     findings = []
     files_scanned = 0
     files_skipped = 0
@@ -311,7 +342,22 @@ def scan_target(target_path=".", max_file_bytes=DEFAULT_MAX_FILE_BYTES):
 
 
 def scan_text(file_path, text, findings):
-    normalized = text.lower()
+    config_kind = _agent_config_kind(file_path)
+    if config_kind:
+        findings.append(
+            _finding(
+                "medium",
+                "agent-configuration-file",
+                file_path,
+                (
+                    "Recognized agent instruction or tool-configuration file; "
+                    "review its provenance and scope before agent use."
+                ),
+                f"structural:path-class={config_kind}",
+            )
+        )
+
+    normalized = _normalize_for_matching(text)
     for rule in RULES:
         evidence = _match_rule(rule, normalized)
         if not evidence:
@@ -329,19 +375,26 @@ def scan_text(file_path, text, findings):
 
 def _match_rule(rule, normalized_text):
     if "any" in rule:
-        for item in rule["any"]:
+        for marker_index, item in enumerate(rule["any"], start=1):
             if item.lower() in normalized_text:
-                return _defang_evidence(item)
+                return f"structural:any-marker={marker_index}"
         return ""
 
     if "allGroups" in rule:
         hits = []
-        for group in rule["allGroups"]:
-            hit = next((item for item in group if item.lower() in normalized_text), None)
-            if hit is None:
+        for group_index, group in enumerate(rule["allGroups"], start=1):
+            marker_index = next(
+                (
+                    index
+                    for index, item in enumerate(group, start=1)
+                    if item.lower() in normalized_text
+                ),
+                None,
+            )
+            if marker_index is None:
                 return ""
-            hits.append(_defang_evidence(hit))
-        return " + ".join(hits)
+            hits.append(f"group-{group_index}-marker={marker_index}")
+        return "structural:" + ";".join(hits)
 
     return ""
 
@@ -370,10 +423,39 @@ def _walk(root):
 
 
 def _is_text_like_file(file_path, base_name):
-    if base_name in TEXT_FILE_NAMES:
+    if base_name.casefold() in TEXT_FILE_NAMES_CASEFOLDED:
         return True
     _, ext = os.path.splitext(file_path)
-    return ext in TEXT_EXTENSIONS
+    return ext.casefold() in TEXT_EXTENSIONS
+
+
+def _agent_config_kind(file_path):
+    normalized_path = "/" + file_path.replace("\\", "/").casefold().lstrip("/")
+    base_name = normalized_path.rsplit("/", 1)[-1]
+
+    if base_name in AGENT_INSTRUCTION_FILE_NAMES:
+        return "agent-instructions"
+    if base_name.endswith(".instructions.md"):
+        return "agent-instructions"
+    if "/.cursor/rules/" in normalized_path and base_name.endswith(".mdc"):
+        return "agent-instructions"
+    if "/.cursor/commands/" in normalized_path and base_name.endswith(".md"):
+        return "agent-instructions"
+    if any(normalized_path.endswith(suffix) for suffix in AGENT_TOOL_CONFIG_PATH_SUFFIXES):
+        return "agent-tool-config"
+    return ""
+
+
+def _normalize_for_matching(text):
+    normalized = unicodedata.normalize("NFKC", str(text))
+    normalized = "".join(
+        character
+        for character in normalized
+        if unicodedata.category(character) != "Cf"
+    )
+    normalized = _HTML_COMMENT_RE.sub(" ", normalized)
+    normalized = _HTML_TAG_RE.sub(" ", normalized)
+    return _WHITESPACE_RE.sub(" ", normalized).casefold()
 
 
 def _safe_size(file_path):
@@ -389,12 +471,6 @@ def _read_text(file_path):
             return handle.read()
     except (OSError, UnicodeDecodeError):
         return None
-
-
-def _defang_evidence(text):
-    text = re.sub(r"ai", "a[i]", str(text), flags=re.IGNORECASE)
-    text = re.sub(r"llm", "l[l]m", text, flags=re.IGNORECASE)
-    return re.sub(r"prompt", "pr[o]mpt", text, flags=re.IGNORECASE)
 
 
 def _finding(severity, type_, path, message, evidence=""):

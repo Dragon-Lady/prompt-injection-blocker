@@ -33,6 +33,7 @@ Exit codes:
 
 def _parse_args(argv):
     args = {"target": ".", "json": False, "report_path": "", "help": False}
+    target_seen = False
 
     index = 0
     while index < len(argv):
@@ -51,7 +52,10 @@ def _parse_args(argv):
             if not args["report_path"]:
                 raise ValueError("--report requires a file path")
         elif not arg.startswith("-"):
+            if target_seen:
+                raise ValueError("Only one target path may be specified")
             args["target"] = arg
+            target_seen = True
         else:
             raise ValueError(f"Unknown argument: {arg}")
         index += 1

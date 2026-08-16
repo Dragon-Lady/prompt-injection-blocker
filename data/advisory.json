@@ -1,14 +1,21 @@
 {
   "incident": "Prompt-injection and LLM anti-analysis intake guard",
-  "lastUpdated": "2026-06-15",
+  "lastUpdated": "2026-08-16",
   "scope": {
-    "scannerPackageSet": "Text-like file scanner for prompt-injection, tool-abuse, secret-exfiltration, LLM anti-analysis language, refusal/null-result bait, and Copilot q-parameter exfiltration links before agent review.",
-    "notInScope": "No malware execution, raw prompt-injection storage, automatic cleanup, token handling, OCR, or claims that content is safe."
+    "scannerPackageSet": "Text-like file scanner for prompt-injection, tool-abuse, secret-exfiltration, LLM anti-analysis language, refusal/null-result bait, Copilot q-parameter exfiltration links, invisible-format obfuscation, and recognized agent instruction or MCP configuration paths before agent review.",
+    "notInScope": "No malware execution, raw prompt-injection storage, automatic cleanup, token handling, OCR, runtime-fetched behavior analysis, or claims that content is safe."
   },
   "sources": [
     "https://socket.dev/blog/mini-shai-hulud-miasma-and-hades-worms-target-bioinformatics-and-mcp-developers-via-malicious",
     "https://research.jfrog.com/post/prompt-injection-vs-scanners/",
     "https://www.bleepingcomputer.com/news/security/new-attack-turned-microsoft-365-copilot-into-1-click-data-theft-tool/",
-    "https://www.windowscentral.com/artificial-intelligence/microsoft-copilot/copilot-ai-reprompt-exploit-detailed-2026"
+    "https://www.windowscentral.com/artificial-intelligence/microsoft-copilot/copilot-ai-reprompt-exploit-detailed-2026",
+    "https://openai.com/index/designing-agents-to-resist-prompt-injection/",
+    "https://learn.microsoft.com/en-us/security/zero-trust/sfi/defend-indirect-prompt-injection",
+    "https://github.blog/ai-and-ml/github-copilot/how-githubs-agentic-security-principles-make-our-ai-agents-as-secure-as-possible/",
+    "https://github.blog/changelog/2026-04-16-manage-agent-skills-with-github-cli/",
+    "https://www.anthropic.com/research/trustworthy-agents",
+    "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html",
+    "https://0din.ai/blog/clone-this-repo-and-i-own-your-machine"
   ]
 }

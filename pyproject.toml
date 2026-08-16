@@ -1,25 +1,26 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "prompt-injection-blocker"
-version = "0.1.3"
+version = "0.1.4"
 description = "Read-only scanner for prompt-injection and LLM anti-analysis text in files before agent review"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "Dragon Lady" }]
 keywords = ["security", "prompt-injection", "llm", "ai-agents", "promptware", "anti-analysis", "scanner"]
 requires-python = ">=3.9"
 dependencies = []
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Security",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",

@@ -48,6 +48,16 @@ def test_report_without_path_exits_one(capsys):
     assert "requires a file path" in capsys.readouterr().err
 
 
+def test_multiple_targets_exit_one(tmp_path, capsys):
+    assert main([str(tmp_path), str(tmp_path)]) == 1
+    assert "Only one target" in capsys.readouterr().err
+
+
+def test_missing_target_exits_one(tmp_path, capsys):
+    assert main([str(tmp_path / "missing")]) == 1
+    assert "Target does not exist" in capsys.readouterr().err
+
+
 def test_help_exits_zero(capsys):
     assert main(["--help"]) == 0
     assert "Exit codes" in capsys.readouterr().out
