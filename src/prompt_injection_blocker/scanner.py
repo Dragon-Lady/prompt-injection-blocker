@@ -265,6 +265,41 @@ RULES = [
         ],
     },
     {
+        "id": "crypto-context-injection",
+        "severity": "critical",
+        "type": "crypto-context-injection",
+        "description": (
+            "Text describes or implements cryptographic context injection: "
+            "ciphertext plus decrypt-in-runtime instructions plus session or "
+            "URL-parameter exfiltration. Input filters cannot read ciphertext; "
+            "decrypted tool output must not be treated as trusted instructions."
+        ),
+        "allGroups": [
+            [
+                _phrase("aes-256-", "gcm"),
+                "pbkdf2",
+                _phrase("decrypt the ", "ciphertext"),
+                _phrase("cryptographic context ", "injection"),
+                _phrase("encrypted ", "instructions"),
+            ],
+            [
+                _phrase("code execution ", "sandbox"),
+                _phrase("follow the ", "decrypted"),
+                _phrase("treat as ", "trusted"),
+                _phrase("summarize this ", "page"),
+                _phrase("decrypt and ", "execute"),
+            ],
+            [
+                _phrase("subscription ", "tier"),
+                _phrase("chat ", "history"),
+                _phrase("user ", "location"),
+                _phrase("append to ", "url"),
+                _phrase("query ", "parameter"),
+                _phrase("attacker-", "controlled"),
+            ],
+        ],
+    },
+    {
         "id": "repo-local-agent-instruction",
         "severity": "medium",
         "type": "repo-local-agent-instruction",

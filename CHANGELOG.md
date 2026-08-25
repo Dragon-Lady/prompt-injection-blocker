@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5 - 2026-08-25
+
+- Detect cryptographic context injection (Adversa / Grok.com, Aug 2026):
+  ciphertext plus decrypt-in-runtime language plus session or URL-parameter
+  exfiltration. Does not store or reproduce attack payloads.
+
 ## 0.1.4 - 2026-08-16
 
 - Normalize Unicode format characters and simple HTML separators before

@@ -59,6 +59,29 @@ def test_copilot_qparam_exfiltration_blocks(tmp_path):
     assert any(f["type"] == "copilot-qparam-exfiltration" for f in report["findings"])
 
 
+def test_crypto_context_injection_blocks(tmp_path):
+    algo = join_parts("aes-256-", "gcm")
+    sandbox = join_parts("code execution ", "sandbox")
+    leak = join_parts("subscription ", "tier")
+    (tmp_path / "advisory.md").write_text(
+        f"Page bait uses {algo} then decrypts inside a {sandbox} and sends the {leak}.\n"
+    )
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "blocked"
+    finding = next(f for f in report["findings"] if f["type"] == "crypto-context-injection")
+    assert finding["evidence"].startswith("structural:")
+    assert algo not in finding["evidence"]
+
+
+def test_crypto_context_injection_needs_all_groups(tmp_path):
+    algo = join_parts("aes-256-", "gcm")
+    (tmp_path / "crypto-notes.md").write_text(
+        f"This document only mentions {algo} in a library comparison.\n"
+    )
+    report = scan_target(str(tmp_path))
+    assert all(f["type"] != "crypto-context-injection" for f in report["findings"])
+
+
 def test_repo_local_agent_instruction_is_review_needed(tmp_path):
     marker = join_parts("always apply ", "these rules")
     (tmp_path / "AGENTS.md").write_text(f"{marker} in this repo.\n")

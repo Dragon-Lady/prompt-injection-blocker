@@ -56,6 +56,10 @@ Exit codes:
   pipeline stop before reaching suspicious payload code
 - Microsoft Copilot / AI-assistant links where a `q=` query parameter appears
   to carry private-context requests plus external exfiltration instructions
+- cryptographic context injection: encrypted page/tool content plus decrypt-in-
+  sandbox language plus session data or URL-parameter exfiltration (Grok.com
+  "summarize this page" class, Aug 2026). Ciphertext is not readable by input
+  filters; decrypted tool output is untrusted.
 - broad repo-local agent instruction language that deserves review before
   opening a path in automated agents
 - recognized agent instruction, skill, and MCP configuration paths, even when

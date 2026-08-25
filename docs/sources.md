@@ -24,6 +24,12 @@
 - 0DIN research on normal-looking repositories whose setup chains fetch
   runtime behavior that static repository scanning cannot establish:
   https://0din.ai/blog/clone-this-repo-and-i-own-your-machine
+- The Register / Ars Technica coverage of Adversa "cryptographic context
+  injection" against Grok.com (encrypted instructions decrypted in the code
+  sandbox, then session data placed on an outbound URL; reported June 2026,
+  still described as unpatched in August 2026 public write-ups):
+  https://www.theregister.com/ai-and-ml/2026/08/20/grok-chat-duped-into-swallowing-injected-instructions/5290019
+  https://arstechnica.com/security/2026/08/grok-exfiltrates-user-data-when-malicious-instructions-are-encrypted/
 
 This project intentionally avoids storing raw prompt-injection text, raw malware
 payloads, exploit reproduction steps, cleanup automation, token handling, or
