@@ -300,6 +300,31 @@ RULES = [
         ],
     },
     {
+        "id": "opaque-decryption-handoff",
+        "severity": "medium",
+        "type": "opaque-decryption-handoff",
+        "description": (
+            "Text asks an agent to decrypt or decode opaque content and then "
+            "treat the result as instructions. Review the source and runtime "
+            "tool permissions; this static signal does not establish exfiltration."
+        ),
+        "allGroups": [
+            [
+                _phrase("encrypted ", "instructions"),
+                _phrase("encrypted ", "payload"),
+                _phrase("encoded ", "instructions"),
+                "ciphertext",
+            ],
+            ["decrypt", "decode"],
+            [
+                _phrase("follow the ", "decrypted"),
+                _phrase("execute the ", "decrypted"),
+                _phrase("run the ", "decoded"),
+                _phrase("treat decoded ", "output as trusted"),
+            ],
+        ],
+    },
+    {
         "id": "repo-local-agent-instruction",
         "severity": "medium",
         "type": "repo-local-agent-instruction",

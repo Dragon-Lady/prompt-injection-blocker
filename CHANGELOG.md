@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.6 - 2026-10-07
+
+- Add a review-only signal for opaque content that asks an agent to decrypt or
+  decode it and then follow the result, without claiming to detect hidden
+  instructions or credential theft.
+- Clarify the Copilot CLI cryptographic-context-injection report and the
+  runtime controls needed when static text matching cannot inspect ciphertext.
+
 ## 0.1.5 - 2026-08-25
 
 - Detect cryptographic context injection (Adversa / Grok.com, Aug 2026):

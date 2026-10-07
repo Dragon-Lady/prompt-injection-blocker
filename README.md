@@ -60,6 +60,9 @@ Exit codes:
   sandbox language plus session data or URL-parameter exfiltration (Grok.com
   "summarize this page" class, Aug 2026). Ciphertext is not readable by input
   filters; decrypted tool output is untrusted.
+- review-only opaque decryption handoffs: visible text that asks an agent to
+  decrypt or decode content and then obey the result, even when no exfiltration
+  destination is visible. A match does not prove the hidden content is harmful.
 - broad repo-local agent instruction language that deserves review before
   opening a path in automated agents
 - recognized agent instruction, skill, and MCP configuration paths, even when
@@ -86,6 +89,11 @@ text into an agent," not "this file is malware."
 - Treat unfamiliar setup commands and anything they fetch at runtime as
   untrusted code. A clean text scan cannot establish what a later network
   response or package installation will execute.
+- For the October 2026 Copilot CLI cryptographic-context-injection report,
+  constrain the agent's file access and outbound destinations, and review
+  resolved tool actions when untrusted pages are read. The researcher reported
+  continued reproduction on October 1; no fixed Copilot CLI version was
+  identified. Do not treat a clean static scan or model refusal as a fix.
 
 ## Scope Limits
 

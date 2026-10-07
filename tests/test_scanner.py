@@ -82,6 +82,26 @@ def test_crypto_context_injection_needs_all_groups(tmp_path):
     assert all(f["type"] != "crypto-context-injection" for f in report["findings"])
 
 
+def test_opaque_decryption_handoff_is_review_only(tmp_path):
+    opaque = join_parts("encrypted ", "instructions")
+    handoff = join_parts("follow the ", "decrypted")
+    (tmp_path / "page-note.txt").write_text(
+        f"A third-party page contains {opaque}; it asks the agent to decrypt and {handoff} result.\n"
+    )
+    report = scan_target(str(tmp_path))
+    assert report["risk"] == "review-needed"
+    assert any(f["type"] == "opaque-decryption-handoff" for f in report["findings"])
+    assert all(f["type"] != "crypto-context-injection" for f in report["findings"])
+
+
+def test_ordinary_ciphertext_note_is_not_handoff(tmp_path):
+    (tmp_path / "crypto-notes.txt").write_text(
+        "The ciphertext is decoded for a comparison, then discarded.\n"
+    )
+    report = scan_target(str(tmp_path))
+    assert all(f["type"] != "opaque-decryption-handoff" for f in report["findings"])
+
+
 def test_repo_local_agent_instruction_is_review_needed(tmp_path):
     marker = join_parts("always apply ", "these rules")
     (tmp_path / "AGENTS.md").write_text(f"{marker} in this repo.\n")

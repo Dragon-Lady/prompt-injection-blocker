@@ -1,8 +1,8 @@
 {
   "incident": "Prompt-injection and LLM anti-analysis intake guard",
-  "lastUpdated": "2026-08-16",
+  "lastUpdated": "2026-10-07",
   "scope": {
-    "scannerPackageSet": "Text-like file scanner for prompt-injection, tool-abuse, secret-exfiltration, LLM anti-analysis language, refusal/null-result bait, Copilot q-parameter exfiltration links, invisible-format obfuscation, and recognized agent instruction or MCP configuration paths before agent review.",
+    "scannerPackageSet": "Text-like file scanner for prompt-injection, tool-abuse, secret-exfiltration, LLM anti-analysis language, refusal/null-result bait, Copilot q-parameter exfiltration links, visible opaque-decryption handoffs, invisible-format obfuscation, and recognized agent instruction or MCP configuration paths before agent review.",
     "notInScope": "No malware execution, raw prompt-injection storage, automatic cleanup, token handling, OCR, runtime-fetched behavior analysis, or claims that content is safe."
   },
   "sources": [
@@ -16,6 +16,7 @@
     "https://github.blog/changelog/2026-04-16-manage-agent-skills-with-github-cli/",
     "https://www.anthropic.com/research/trustworthy-agents",
     "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html",
-    "https://0din.ai/blog/clone-this-repo-and-i-own-your-machine"
+    "https://0din.ai/blog/clone-this-repo-and-i-own-your-machine",
+    "https://adversa.ai/blog/cryptographic-context-injection-github-copilot/"
   ]
 }

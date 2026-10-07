@@ -30,6 +30,11 @@
   still described as unpatched in August 2026 public write-ups):
   https://www.theregister.com/ai-and-ml/2026/08/20/grok-chat-duped-into-swallowing-injected-instructions/5290019
   https://arstechnica.com/security/2026/08/grok-exfiltrates-user-data-when-malicious-instructions-are-encrypted/
+- Adversa AI original October 6, 2026 Copilot CLI cryptographic-context-
+  injection report. The researcher says the chain still reproduced on October
+  1, with no fixed CLI version announced, and recommends runtime provenance,
+  action tracing, and outbound/file-access gates:
+  https://adversa.ai/blog/cryptographic-context-injection-github-copilot/
 
 This project intentionally avoids storing raw prompt-injection text, raw malware
 payloads, exploit reproduction steps, cleanup automation, token handling, or
