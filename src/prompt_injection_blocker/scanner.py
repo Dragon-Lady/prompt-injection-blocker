@@ -354,14 +354,18 @@ def scan_target(target_path=".", max_file_bytes=DEFAULT_MAX_FILE_BYTES):
     findings = []
     files_scanned = 0
     files_skipped = 0
+    coverage_errors = []
 
-    for file_path, base_name in _walk(root):
+    for file_path, base_name in _walk(root, coverage_errors):
         if not _is_text_like_file(file_path, base_name):
             continue
         size = _safe_size(file_path)
         if size is None:
+            coverage_errors.append({"path": file_path, "reason": "stat-error"})
+            files_skipped += 1
             continue
         if size > max_file_bytes:
+            coverage_errors.append({"path": file_path, "reason": "size-limit"})
             files_skipped += 1
             findings.append(
                 _finding(
@@ -375,6 +379,8 @@ def scan_target(target_path=".", max_file_bytes=DEFAULT_MAX_FILE_BYTES):
 
         text = _read_text(file_path)
         if text is None:
+            coverage_errors.append({"path": file_path, "reason": "read-error"})
+            files_skipped += 1
             findings.append(
                 _finding("low", "read-error", file_path, "Could not read file as UTF-8 text.")
             )
@@ -391,6 +397,7 @@ def scan_target(target_path=".", max_file_bytes=DEFAULT_MAX_FILE_BYTES):
         "scannedAt": datetime.now(timezone.utc).isoformat(),
         "target": root,
         "risk": risk,
+        "coverage": {"complete": not coverage_errors, "errors": coverage_errors},
         "summary": {
             "filesScanned": files_scanned,
             "filesSkipped": files_skipped,
@@ -459,7 +466,7 @@ def _match_rule(rule, normalized_text):
     return ""
 
 
-def _walk(root):
+def _walk(root, coverage_errors):
     if os.path.isfile(root):
         yield root, os.path.basename(root)
         return
@@ -470,6 +477,7 @@ def _walk(root):
         try:
             entries = list(os.scandir(current))
         except OSError:
+            coverage_errors.append({"path": current, "reason": "list-error"})
             continue
         for entry in entries:
             try:
@@ -479,6 +487,7 @@ def _walk(root):
                 elif entry.is_file(follow_symlinks=False):
                     yield entry.path, entry.name
             except OSError:
+                coverage_errors.append({"path": entry.path, "reason": "stat-error"})
                 continue
 
 
