@@ -21,12 +21,12 @@ Usage:
 
 Options:
   --json              print JSON report to stdout
-  --report <path>     write JSON report to a specific path
+  --report <path>     create a new private JSON report; existing paths refused
   -h, --help          show this help
 
 Exit codes:
   0  no blocking promptware patterns found
-  1  usage or runtime error
+  1  usage/runtime error or incomplete scan
   2  blocking promptware patterns found
 """
 
@@ -44,7 +44,7 @@ def _parse_args(argv):
             args["json"] = True
         elif arg == "--report":
             index += 1
-            if index >= len(argv) or not argv[index]:
+            if index >= len(argv) or not argv[index] or argv[index].startswith("-"):
                 raise ValueError("--report requires a file path")
             args["report_path"] = argv[index]
         elif arg.startswith("--report="):
@@ -69,6 +69,10 @@ def _print_human(report, written_report_path):
     print(f"Risk: {report['risk']}")
     print(f"Scanned: {report['summary']['filesScanned']} files")
     print(f"Findings: {report['summary']['findings']}")
+    if not report["coverage"]["complete"]:
+        print("INCOMPLETE: some inputs could not be inspected; this is not a passed scan.")
+        for error in report["coverage"]["errors"]:
+            print(f"  {error['reason']}: {error['path']}")
     print("")
 
     if report["risk"] == "blocked":
@@ -114,7 +118,9 @@ def main(argv=None):
         written_report_path = ""
         if args["report_path"]:
             written_report_path = os.path.abspath(args["report_path"])
-            with open(written_report_path, "w", encoding="utf-8") as handle:
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+            descriptor = os.open(written_report_path, flags, 0o600)
+            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
                 handle.write(json.dumps(report, indent=2) + "\n")
 
         if args["json"]:
@@ -122,7 +128,9 @@ def main(argv=None):
         else:
             _print_human(report, written_report_path)
 
-        return 2 if report["risk"] == "blocked" else 0
+        if report["risk"] == "blocked":
+            return 2
+        return 0 if report["coverage"]["complete"] else 1
     except (ValueError, OSError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
